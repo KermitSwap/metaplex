@@ -34,9 +34,9 @@ const UserActions = () => {
       <Link to={`/auction/create/0`}>
         <Button className="connector" type="primary" >Sell</Button>
       </Link>
-      {/* <Button onClick={()=>{
+      <Button onClick={()=>{
         saveAdmin(connection,wallet,false,[])
-      }}>Make admin</Button> */}
+      }}>Make admin</Button>
       </>
   );
 };
