@@ -2,14 +2,16 @@ import React, { useMemo } from 'react';
 import './index.less';
 import { Link } from 'react-router-dom';
 import { Button, Dropdown, Menu } from 'antd';
-import { ConnectButton, CurrentUserBadge, useWallet } from '@oyster/common';
+import { ConnectButton, CurrentUserBadge, useWallet,useConnection } from '@oyster/common';
 import { Notifications } from '../Notifications';
 import useWindowDimensions from '../../utils/layout';
 import { MenuOutlined } from '@ant-design/icons';
 import { useMeta } from '../../contexts';
+import { saveAdmin } from '../../actions/saveAdmin';
 
 const UserActions = () => {
   const { wallet } = useWallet();
+  const connection=useConnection();
   const { whitelistedCreatorsByCreator, store } = useMeta();
   const pubkey = wallet?.publicKey?.toBase58() || '';
 
@@ -32,7 +34,10 @@ const UserActions = () => {
       <Link to={`/auction/create/0`}>
         <Button className="connector" type="primary" >Sell</Button>
       </Link>
-    </>
+      {/* <Button onClick={()=>{
+        saveAdmin(connection,wallet,false,[])
+      }}>Make admin</Button> */}
+      </>
   );
 };
 
