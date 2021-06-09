@@ -88,6 +88,7 @@ export const ArtContent = ({
     )
   ) : (
     <Image
+    style={{paddingRight:"20px"}}
       src={src}
       preview={preview}
       wrapperClassName={className}

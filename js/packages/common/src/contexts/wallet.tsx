@@ -157,7 +157,7 @@ export function WalletProvider({ children = null as any }) {
           marginBottom: 10,
         }}>M</div>
 
-        <h2>{provider ? 'Change provider' : 'Welcome to Metaplex'}</h2>
+        <h2>{provider ? 'Change provider' : 'Welcome to KermitX'}</h2>
         <p>{provider ? 'Feel free to switch wallet provider' : 'You must be signed in to place a bid'}</p>
 
         <br />

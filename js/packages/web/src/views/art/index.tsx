@@ -49,12 +49,13 @@ export const ArtView = () => {
               category={art.category}
               extension={art.image}
               uri={art.image}
-              style={{ width: 500 }}
+              
               height={500}
               width={500}
               className="artwork-image"
               files={art.files}
               active={true}
+              
             />
           </Col>
           {/* <Divider /> */}
@@ -63,10 +64,10 @@ export const ArtView = () => {
             md={{ span: 12 }}
             style={{ textAlign: 'left', fontSize: '1.4rem' }}
           >
-            <div style={{ fontWeight: 700, fontSize: '4rem' }}>{art.title}</div>
+            <div style={{ fontWeight: 700, fontSize: '4rem', color:"#42f3ae" }}>{art.title}</div>
             <br />
-            <div className="info-header">CREATED BY</div>
-            <div className="creators">
+            <div className="info-header" style={{color:"#39bf8b"}}>CREATED BY</div>
+            <div className="creators" style={{color:"#42f3ae"}}> 
               {(art.creators || []).map(creator => {
                 return (
                   <div
