@@ -29,8 +29,8 @@ export const PreSaleBanner = ({ auction }: IPreSaleBanner) => {
           className="artwork-image"
         />
       </Col>
-      <Col md={12} className="presale-info" style={{paddingLeft:"40px"}}>
-        <h2 className="art-title">
+      <Col md={12} className="presale-info" style={{paddingLeft:"4vw"}}>
+        <h2 className="art-title" style={{paddingTop:"20px"}}>
           {art.title}
         </h2>
         {auction && (
