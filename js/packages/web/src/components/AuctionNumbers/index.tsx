@@ -107,28 +107,28 @@ const Countdown = ({ state }: { state?: CountdownState }) => {
               {state && state.days > 0 && (
                 <Col>
                   <div className="cd-number">
-                    {state.days < 10 && <span style={{ opacity: 0.6 }}>0</span>}
+                    {state.days < 10 && <span style={{ opacity: 1 }}>0</span>}
                     {state.days}
-                    <span style={{ opacity: 0.6 }}>:</span>
+                    <span style={{ opacity: 1 }}>:</span>
                   </div>
                   <div className="cd-label">days</div>
                 </Col>
               )}
               <Col>
                 <div className="cd-number">
-                  {state.hours < 10 && <span style={{ opacity: 0.6 }}>0</span>}
+                  {state.hours < 10 && <span style={{ opacity: 1 }}>0</span>}
                   {state.hours}
-                  <span style={{ opacity: 0.6 }}>:</span>
+                  <span style={{ opacity: 1 }}>:</span>
                 </div>
                 <div className="cd-label">hour</div>
               </Col>
               <Col>
                 <div className="cd-number">
                   {state.minutes < 10 && (
-                    <span style={{ opacity: 0.6 }}>0</span>
+                    <span style={{ opacity: 1 }}>0</span>
                   )}
                   {state.minutes}
-                  {state.days === 0 && <span style={{ opacity: 0.6 }}>:</span>}
+                  {state.days === 0 && <span style={{ opacity: 1 }}>:</span>}
                 </div>
                 <div className="cd-label">mins</div>
               </Col>
@@ -136,7 +136,7 @@ const Countdown = ({ state }: { state?: CountdownState }) => {
                 <Col>
                   <div className="cd-number">
                     {state.seconds < 10 && (
-                      <span style={{ opacity: 0.6 }}>0</span>
+                      <span style={{ opacity: 1 }}>0</span>
                     )}
                     {state.seconds}
                   </div>
