@@ -505,7 +505,7 @@ const CategoryStep = (props: {
       <Row className="call-to-action">
         <h2>List an item</h2>
         <p>
-          First time listing on KermitX? <a>Read our sellers' guide.</a>
+          First time listing on KermitX? <a href="https://docs.kermit.exchange/how-to-sell-an-nft-on-kermitx">Read our sellers' guide.</a>
         </p>
       </Row>
       <Row justify={width < 768 ? 'center' : 'start'}>

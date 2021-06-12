@@ -23,7 +23,7 @@ export const EtherscanLink = (props: {
     <a
       href={`https://etherscan.io/${type}/${address}`}
       // eslint-disable-next-line react/jsx-no-target-blank
-      target="_blank"
+      target="_blank" rel="noopener noreferrer"
       title={address}
       style={props.style}
     >

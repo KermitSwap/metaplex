@@ -45,7 +45,7 @@ const DefaultActions = ({ vertical = false }: { vertical?: boolean }) => {
       flexDirection: vertical ? "column" : "row",
     }}>
       <Link to={`/`}>
-        <Button className="app-btn">Explore</Button>
+        <Button className="app-btn">Auctions</Button>
       </Link>
       <Link to={`/artworks`}>
         <Button className="app-btn">{connected ? "My Items" : "Artworks"}</Button>
@@ -53,6 +53,12 @@ const DefaultActions = ({ vertical = false }: { vertical?: boolean }) => {
       <Link to={`/artists`}>
         <Button className="app-btn">Creators</Button>
       </Link>
+      <a href="https://kermitfinance.com/">
+        <Button className="app-btn">Home</Button>
+      </a>
+      <a href="https://kermit.exchange/">
+        <Button className="app-btn">Dex</Button>
+      </a>
     </div>
   )
 }

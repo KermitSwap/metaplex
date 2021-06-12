@@ -219,7 +219,7 @@ const CategoryStep = (props: {
         <h2>Create a new item</h2>
         <p>
           First time creating on KermitX?{' '}
-          <a href="#">Read our creators’ guide.</a>
+          <a href="https://docs.kermit.exchange/">Read our creators’ guide.</a>
         </p>
       </Row>
       <Row justify={width < 768 ? 'center' : 'start'}>
