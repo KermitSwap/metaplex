@@ -27,6 +27,8 @@ import {
   Vault,
   setProgramIds,
   useConnectionConfig,
+  walletAdapters,
+  AuctionState,
 } from '@oyster/common';
 import { MintInfo } from '@solana/spl-token';
 import { Connection, PublicKey, PublicKeyAndAccount } from '@solana/web3.js';
@@ -537,6 +539,7 @@ const queryExtendedMetadata = async (
         key,
         mintAccount,
         MintParser,
+        false,
       ) as ParsedAccount<MintInfo>;
       if (mint.info.supply.gt(new BN(1)) || mint.info.decimals !== 0) {
         // naive not NFT check
@@ -587,6 +590,7 @@ const processAuctions = (
       a.pubkey,
       a.account,
       AuctionParser,
+      false,
     ) as ParsedAccount<AuctionData>;
 
     setAuctions((e: any) => ({
@@ -603,6 +607,7 @@ const processAuctions = (
         a.pubkey,
         a.account,
         BidderMetadataParser,
+        false,
       ) as ParsedAccount<BidderMetadata>;
       setBidderMetadataByAuctionAndBidder((e: any) => ({
         ...e,
@@ -621,6 +626,7 @@ const processAuctions = (
         a.pubkey,
         a.account,
         BidderPotParser,
+        false,
       ) as ParsedAccount<BidderPot>;
 
       setBidderPotsByAuctionAndBidder((e: any) => ({
@@ -649,10 +655,7 @@ const processMetaplexAccounts = async (
   try {
     const STORE_ID = programIds().store?.toBase58() || '';
 
-    if (
-      a.account.data[0] === MetaplexKey.AuctionManagerV1 ||
-      a.account.data[0] === 0
-    ) {
+    if (a.account.data[0] === MetaplexKey.AuctionManagerV1) {
       const storeKey = new PublicKey(a.account.data.slice(1, 33));
       if (storeKey.toBase58() === STORE_ID) {
         const auctionManager = decodeAuctionManager(a.account.data);
@@ -714,6 +717,7 @@ const processMetaplexAccounts = async (
           a.pubkey,
           a.account,
           WhitelistedCreatorParser,
+          false,
         ) as ParsedAccount<WhitelistedCreator>;
 
         const nameInfo = (names as any)[account.info.address.toBase58()];
@@ -748,10 +752,7 @@ const processMetaData = async (
   if (meta.account.owner.toBase58() != programIds().metadata.toBase58()) return;
 
   try {
-    if (
-      meta.account.data[0] === MetadataKey.MetadataV1 ||
-      meta.account.data[0] === 0
-    ) {
+    if (meta.account.data[0] === MetadataKey.MetadataV1) {
       const metadata = await decodeMetadata(meta.account.data);
 
       if (
@@ -824,10 +825,7 @@ const processVaultData = (
         ...e,
         [safetyDeposit.vault.toBase58() + '-' + safetyDeposit.order]: account,
       }));
-    } else if (
-      a.account.data[0] === VaultKey.VaultV1 ||
-      a.account.data[0] === 0
-    ) {
+    } else if (a.account.data[0] === VaultKey.VaultV1) {
       const vault = decodeVault(a.account.data);
       const account: ParsedAccount<Vault> = {
         pubkey: a.pubkey,
