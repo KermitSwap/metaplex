@@ -14,13 +14,19 @@
   "5tE6MJBPSA4ExkvEzC1bM4gKW54J17BzYnPA3rLqBpvA": {
     "name": "Hurricane",
     "image": "https://i.imgur.com/0daLkfk.png",
-    "description": "Artist specializing in pop culture, dinosaurs and video games. Digital artist (2D, 3D, animation)",
+    "description": "Artist specializing in pop culture, dinosaurs and video games. Digital artist (2D, 3D, animation).",
     "background": ""
   },
   "Gf4EWrvgqeuyszbhsq2mTMooGJ6zsMB7f1CSnZZ8vvSV": {
     "name": "Ashuleee",
     "image": "https://i.imgur.com/uBEYlal.jpeg",
     "description": "An artist with a great curiosity, dabbled around too much so I'm not really good on focusing to one thing.",
+    "background": ""
+  },
+  "Acyh1sWdqdThttcRDFvv2DdHFeyupN9Ctt4fRi2YsNGd":{
+    "name": "TLKT",
+    "image": "https://i.imgur.com/oUXZCso.jpeg",
+    "description": "I'm a 2D and 3D freelance artist and musician.",
     "background": ""
   }
 }
