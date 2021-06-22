@@ -16,6 +16,7 @@ import { useEffect, useState } from 'react';
 import { useMeta } from '../contexts';
 import {
   AuctionManager,
+  AuctionManagerStatus,
   BidRedemptionTicket,
   getBidderKeys,
 } from '../models/metaplex';
@@ -25,6 +26,7 @@ export enum AuctionViewState {
   Upcoming = '1',
   Ended = '2',
   BuyNow = '3',
+  Defective = '-1',
 }
 
 export interface AuctionViewItem {
@@ -188,7 +190,7 @@ export function processAccountsIntoAuctionView(
   existingAuctionView?: AuctionView,
 ): AuctionView | undefined {
   let state: AuctionViewState;
-  if (auction.info.state === AuctionState.Ended) {
+  if (auction.info.ended()) {
     state = AuctionViewState.Ended;
   } else if (auction.info.state === AuctionState.Started) {
     state = AuctionViewState.Live;
@@ -198,11 +200,30 @@ export function processAccountsIntoAuctionView(
     state = AuctionViewState.BuyNow;
   }
 
-  if (desiredState && desiredState !== state) return undefined;
-
   const auctionManager =
     auctionManagersByAuction[auction.pubkey.toBase58() || ''];
+
+  // The defective auction view state really applies to auction managers, not auctions, so we ignore it here
+  if (
+    desiredState &&
+    desiredState != AuctionViewState.Defective &&
+    desiredState !== state
+  )
+    return undefined;
+
   if (auctionManager) {
+    // instead we apply defective state to auction managers
+    if (
+      desiredState == AuctionViewState.Defective &&
+      auctionManager.info.state.status != AuctionManagerStatus.Initialized
+    )
+      return undefined;
+    // Generally the only way an initialized auction manager can get through is if you are asking for defective ones.
+    else if (
+      desiredState != AuctionViewState.Defective &&
+      auctionManager.info.state.status == AuctionManagerStatus.Initialized
+    )
+      return undefined;
     const boxesExpected = auctionManager.info.state.winningConfigItemsValidated;
 
     let bidRedemption: ParsedAccount<BidRedemptionTicket> | undefined =
@@ -354,10 +375,12 @@ export function processAccountsIntoAuctionView(
         view.thumbnail &&
         boxesExpected ===
           (view.items || []).length +
-            (auctionManager.info.settings.participationConfig === null
+            (auctionManager.info.settings.participationConfig === null ||
+            auctionManager.info.settings.participationConfig === undefined
               ? 0
               : 1) &&
         (auctionManager.info.settings.participationConfig === null ||
+          auctionManager.info.settings.participationConfig === undefined ||
           (auctionManager.info.settings.participationConfig !== null &&
             view.participationItem)) &&
         view.vault
