@@ -8,7 +8,6 @@ import {
   actions,
   Metadata,
   ParsedAccount,
-  WinnerLimit,
   MasterEdition,
   SequenceType,
   sendTransactions,
@@ -20,7 +19,8 @@ import {
   getSafetyDepositBoxAddress,
   createAssociatedTokenAccountInstruction,
   sendTransactionWithRetry,
-  PriceFloor,
+  findProgramAddress,
+  IPartialCreateAuctionArgs,
 } from '@oyster/common';
 
 import { AccountLayout, Token } from '@solana/spl-token';
@@ -99,13 +99,10 @@ export async function createAuctionManager(
     ParsedAccount<WhitelistedCreator>
   >,
   settings: AuctionManagerSettings,
-  winnerLimit: WinnerLimit,
-  endAuctionAt: BN,
-  auctionGap: BN,
+  auctionSettings: IPartialCreateAuctionArgs,
   safetyDepositDrafts: SafetyDepositDraft[],
   participationSafetyDepositDraft: SafetyDepositDraft | undefined,
   paymentMint: PublicKey,
-  priceFloor: PriceFloor,
 ): Promise<{
   vault: PublicKey;
   auction: PublicKey;
@@ -135,15 +132,7 @@ export async function createAuctionManager(
     instructions: makeAuctionInstructions,
     signers: makeAuctionSigners,
     auction,
-  } = await makeAuction(
-    wallet,
-    winnerLimit,
-    vault,
-    endAuctionAt,
-    auctionGap,
-    paymentMint,
-    priceFloor,
-  );
+  } = await makeAuction(wallet, vault, auctionSettings);
 
   let safetyDepositConfigsWithPotentiallyUnsetTokens =
     await buildSafetyDepositArray(
@@ -410,7 +399,7 @@ async function buildSafetyDepositArray(
   ) {
     safetyDepositConfig.push({
       tokenAccount: (
-        await PublicKey.findProgramAddress(
+        await findProgramAddress(
           [
             wallet.publicKey.toBuffer(),
             programIds().token.toBuffer(),
@@ -671,7 +660,7 @@ async function buildAndPopulateOneTimeAuthorizationAccount(
   let signers: Keypair[] = [];
   let instructions: TransactionInstruction[] = [];
   const recipientKey: PublicKey = (
-    await PublicKey.findProgramAddress(
+    await findProgramAddress(
       [
         wallet.publicKey.toBuffer(),
         programIds().token.toBuffer(),
