@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+npm install @types/react
 echo "Starting to deploy 'web', bootstrapping..."
 yarn bootstrap
 echo "Preparing 'common'..."
