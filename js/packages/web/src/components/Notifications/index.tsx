@@ -11,10 +11,7 @@ import {
   useWallet,
   VaultState,
 } from '@oyster/common';
-import {
-  Connection,
-  PublicKey,
-} from '@solana/web3.js';
+import { Connection, PublicKey } from '@solana/web3.js';
 import { Badge, Popover, List } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -23,14 +20,11 @@ import { decommAuctionManagerAndReturnPrizes } from '../../actions/decommAuction
 import { sendSignMetadata } from '../../actions/sendSignMetadata';
 import { unwindVault } from '../../actions/unwindVault';
 import { settle } from '../../actions/settle';
+import { startAuctionManually } from '../../actions/startAuctionManually';
 
 import { QUOTE_MINT } from '../../constants';
 import { useMeta } from '../../contexts';
-import {
-  AuctionViewState,
-  useAuctions,
-} from '../../hooks';
-import './index.less';
+import { AuctionViewState, useAuctions } from '../../hooks';
 import { WalletAdapter } from '@solana/wallet-base';
 interface NotificationCard {
   id: string;
@@ -101,7 +95,7 @@ function RunAction({
   return component;
 }
 
-async function getPersonalEscrowAta(
+export async function getPersonalEscrowAta(
   wallet: WalletAdapter | undefined,
 ): Promise<PublicKey | undefined> {
   const PROGRAM_IDS = programIds();
@@ -180,7 +174,7 @@ export function useSettlementAuctions({
   notifications: NotificationCard[];
 }) {
   const { accountByMint } = useUserAccounts();
-  const walletPubkey = wallet?.publicKey?.toBase58() || '';
+  const walletPubkey = wallet?.publicKey;
   const { bidderPotsByAuctionAndBidder } = useMeta();
   const auctionsNeedingSettling = useAuctions(AuctionViewState.Ended);
 
@@ -191,7 +185,8 @@ export function useSettlementAuctions({
       const nextBatch = auctionsNeedingSettling
         .filter(
           a =>
-            a.auctionManager.info.authority.toBase58() === walletPubkey &&
+            walletPubkey &&
+            a.auctionManager.info.authority.equals(walletPubkey) &&
             a.auction.info.ended(),
         )
         .sort(
@@ -203,21 +198,25 @@ export function useSettlementAuctions({
         const av = nextBatch[i];
         if (!CALLING_MUTEX[av.auctionManager.pubkey.toBase58()]) {
           CALLING_MUTEX[av.auctionManager.pubkey.toBase58()] = true;
-          const balance = await connection.getTokenAccountBalance(
-            av.auctionManager.info.acceptPayment,
-          );
-          if (
-            ((balance.value.uiAmount || 0) === 0 &&
-              av.auction.info.bidState.bids
-                .map(b => b.amount.toNumber())
-                .reduce((acc, r) => (acc += r), 0) > 0) ||
-            (balance.value.uiAmount || 0) > 0.01
-          ) {
-            setValidDiscoveredEndedAuctions(old => ({
-              ...old,
-              [av.auctionManager.pubkey.toBase58()]:
-                balance.value.uiAmount || 0,
-            }));
+          try {
+            const balance = await connection.getTokenAccountBalance(
+              av.auctionManager.info.acceptPayment,
+            );
+            if (
+              ((balance.value.uiAmount || 0) === 0 &&
+                av.auction.info.bidState.bids
+                  .map(b => b.amount.toNumber())
+                  .reduce((acc, r) => (acc += r), 0) > 0) ||
+              (balance.value.uiAmount || 0) > 0.01
+            ) {
+              setValidDiscoveredEndedAuctions(old => ({
+                ...old,
+                [av.auctionManager.pubkey.toBase58()]:
+                  balance.value.uiAmount || 0,
+              }));
+            }
+          } catch (e) {
+            console.error(e);
           }
         }
       }
@@ -270,7 +269,6 @@ export function useSettlementAuctions({
               myPayingAccount?.pubkey,
               accountByMint,
             );
-            const PROGRAM_IDS = programIds();
             if (wallet?.publicKey) {
               const ata = await getPersonalEscrowAta(wallet);
               if (ata) await closePersonalEscrow(connection, wallet, ata);
@@ -296,6 +294,7 @@ export function Notifications() {
   const possiblyBrokenAuctionManagerSetups = useAuctions(
     AuctionViewState.Defective,
   );
+  const upcomingAuctions = useAuctions(AuctionViewState.Upcoming);
   const connection = useConnection();
   const { wallet } = useWallet();
   const { accountByMint } = useUserAccounts();
@@ -414,6 +413,25 @@ export function Notifications() {
       },
     });
   });
+
+  upcomingAuctions
+    .filter(v => v.auctionManager.info.authority.toBase58() === walletPubkey)
+    .forEach(v => {
+      notifications.push({
+        id: v.auctionManager.pubkey.toBase58(),
+        title: 'You have an auction which is not started yet!',
+        description: <span>You can activate it now if you wish.</span>,
+        action: async () => {
+          try {
+            await startAuctionManually(connection, wallet, v);
+          } catch (e) {
+            console.error(e);
+            return false;
+          }
+          return true;
+        },
+      });
+    });
 
   const content = notifications.length ? (
     <div style={{ width: '300px' }}>

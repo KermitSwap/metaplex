@@ -7,7 +7,6 @@ import {
   CreateAuctionArgs,
 } from '@oyster/common';
 
-import { METAPLEX_PREFIX } from '../models/metaplex';
 const { AUCTION_PREFIX, createAuction } = actions;
 
 // This command makes an auction
@@ -35,16 +34,9 @@ export async function makeAuction(
     )
   )[0];
 
-  const auctionManagerKey: PublicKey = (
-    await findProgramAddress(
-      [Buffer.from(METAPLEX_PREFIX), auctionKey.toBuffer()],
-      PROGRAM_IDS.metaplex,
-    )
-  )[0];
-
   const fullSettings = new CreateAuctionArgs({
     ...auctionSettings,
-    authority: auctionManagerKey,
+    authority: wallet.publicKey,
     resource: vault,
   });
 

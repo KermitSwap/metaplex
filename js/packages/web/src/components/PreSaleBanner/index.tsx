@@ -1,7 +1,6 @@
 import React from 'react';
 import { Col, Row, Button, Skeleton } from 'antd';
 
-import './index.less';
 import { AuctionView, useArt } from '../../hooks';
 import { ArtContent } from '../ArtContent';
 import { AuctionCard } from '../AuctionCard';
@@ -27,6 +26,7 @@ export const PreSaleBanner = ({ auction }: IPreSaleBanner) => {
         <ArtContent
           pubkey={id}
           className="artwork-image"
+          allowMeshRender={true}
         />
       </Col>
       <Col md={12} className="presale-info" style={{paddingLeft:"4vw"}}>
