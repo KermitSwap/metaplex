@@ -42,6 +42,16 @@ export class BidState {
   bids: Bid[];
   max: BN;
 
+  public getWinnerAt(winnerIndex: number): PublicKey | null {
+    const convertedIndex = this.bids.length - winnerIndex - 1;
+
+    if (convertedIndex >= 0 && convertedIndex < this.bids.length) {
+      return this.bids[convertedIndex].key;
+    } else {
+      return null;
+    }
+  }
+
   public getWinnerIndex(bidder: PublicKey): number | null {
     if (!this.bids) return null;
 
@@ -431,6 +441,10 @@ class CancelBidArgs {
   }
 }
 
+class SetAuthorityArgs {
+  instruction: number = 5;
+}
+
 export const AUCTION_SCHEMA = new Map<any, any>([
   [
     CreateAuctionArgs,
@@ -489,6 +503,14 @@ export const AUCTION_SCHEMA = new Map<any, any>([
         ['instruction', 'u8'],
         ['resource', 'pubkey'],
       ],
+    },
+  ],
+
+  [
+    SetAuthorityArgs,
+    {
+      kind: 'struct',
+      fields: [['instruction', 'u8']],
     },
   ],
   [
@@ -684,6 +706,42 @@ export async function startAuction(
     },
     {
       pubkey: SYSVAR_CLOCK_PUBKEY,
+      isSigner: false,
+      isWritable: false,
+    },
+  ];
+  instructions.push(
+    new TransactionInstruction({
+      keys,
+      programId: auctionProgramId,
+      data: data,
+    }),
+  );
+}
+
+export async function setAuctionAuthority(
+  auction: PublicKey,
+  currentAuthority: PublicKey,
+  newAuthority: PublicKey,
+  instructions: TransactionInstruction[],
+) {
+  const auctionProgramId = programIds().auction;
+
+  const data = Buffer.from(serialize(AUCTION_SCHEMA, new SetAuthorityArgs()));
+
+  const keys = [
+    {
+      pubkey: auction,
+      isSigner: false,
+      isWritable: true,
+    },
+    {
+      pubkey: currentAuthority,
+      isSigner: true,
+      isWritable: false,
+    },
+    {
+      pubkey: newAuthority,
       isSigner: false,
       isWritable: false,
     },
