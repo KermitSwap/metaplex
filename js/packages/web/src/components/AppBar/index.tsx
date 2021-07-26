@@ -61,10 +61,10 @@ const DefaultActions = ({ vertical = false }: { vertical?: boolean }) => {
       <Link to={`/artists`}>
         <Button className="app-btn">Creators</Button>
       </Link>
-      <a href="https://kermitfinance.com/">
+      <a href="https:/kermit.exchange/">
         <Button className="app-btn">Home</Button>
       </a>
-      <a href="https://kermit.exchange/">
+      <a href="https://dex.kermit.exchange/">
         <Button className="app-btn">Dex</Button>
       </a>
     </div>
